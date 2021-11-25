@@ -1,6 +1,6 @@
 const express = require('express');
-const usersRouter = require('./rouets/users');
-const cardsRouter = require('./rouets/cards');
+const usersRouter = require('./routes/users');
+const cardsRouter = require('./routes/cards');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -11,7 +11,7 @@ const doesUrlExist = (req, res, next) => {
     && req.path !== '/cards'
     && req.path !== '/users/:id'
   ) {
-    res.send({ message: 'Requested resource not found' });
+    res.status(404).send({ message: 'Requested resource not found' });
     return;
   }
 
