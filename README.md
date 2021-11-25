@@ -14,5 +14,13 @@ All other directories are optional and may be created by the developer if necess
   
 `npm run dev` — to launch the server with the hot reload feature.  
 
+## Examples
+
+Get cards list - http://localhost:3000/cards
+
+Get users list - http://localhost:3000/users
+
+Get user by id - http://localhost:3000/users/d285e3dceed844f902650f40
+
 
 
