@@ -11,7 +11,7 @@ cardsRouter.get('/cards', (req, res) => {
       const parsedCardsData = JSON.parse(cards);
       res.send(parsedCardsData);
     })
-    .catch(() => res.send({ message: 'An error has occurred on the server' }));
+    .catch(() => res.status(500).send({ message: 'An error has occurred on the server' }));
 });
 
 module.exports = cardsRouter;

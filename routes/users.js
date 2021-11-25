@@ -8,7 +8,7 @@ usersRouter.get('/users', (req, res) => {
   fsPromises
     .readFile(USERS_PATH, { encoding: 'utf8' })
     .then((users) => res.send({ data: JSON.parse(users) }))
-    .catch(() => res.send({ message: 'An error has occurred on the server' }));
+    .catch(() => res.status(500).send({ message: 'An error has occurred on the server' }));
 });
 
 usersRouter.get('/users/:id', (req, res) => {
@@ -23,7 +23,7 @@ usersRouter.get('/users/:id', (req, res) => {
         res.send({ data: userId });
       }
     })
-    .catch(() => res.status(500).send('An error has occurred on the server'));
+    .catch(() => res.status(500).send({ message: 'An error has occurred on the server' }));
 });
 
 module.exports = usersRouter;

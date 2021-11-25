@@ -6,15 +6,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 const doesUrlExist = (req, res, next) => {
-  if (
-    req.path !== '/users'
-    && req.path !== '/cards'
-    && req.path !== '/users/:id'
-  ) {
-    res.status(404).send({ message: 'Requested resource not found' });
-    return;
-  }
-
+  res.status(404).send({ message: 'Requested resource not found' });
   next();
 };
 
