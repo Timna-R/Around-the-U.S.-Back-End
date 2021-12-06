@@ -1,9 +1,13 @@
 # Around the U.S. Back End  
   
 ## Directories  
-  
-`/data` — JSON files to temporarily emulate database integration.  
-  
+
+The project is connected to the MongoDB database with Mongoose.
+
+`/models` — Mongoose Schemas.  
+
+`/controllers` — A collection of request handler functions responsible for interacting with a particular model.  
+
 `/routes` — routing files.  
   
 All other directories are optional and may be created by the developer if necessary.   
@@ -16,11 +20,22 @@ All other directories are optional and may be created by the developer if necess
 
 ## Examples
 
-Get cards list - http://localhost:3000/cards
+GET users list - http://localhost:3000/users
 
-Get users list - http://localhost:3000/users
+GET user by id - http://localhost:3000/users/61adfd772f61a35cbef311c0
 
-Get user by id - http://localhost:3000/users/d285e3dceed844f902650f40
+POST create user - http://localhost:3000/users
+
+PATCH update user profile - http://localhost:3000/users/me
+
+PATCH update user avatar - http://localhost:3000/users/me/avatar
+
+GET/POST cards list - http://localhost:3000/cards
+
+DELETE card dy id - http://localhost:3000/cards/:cardId
+
+PUT/DELETE like or dislike a card - http://localhost:3000/cards/:cardId/likes
+
 
 **GitHub**
 
