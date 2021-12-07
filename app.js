@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
 const bodyparser = require('body-parser');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -14,6 +15,7 @@ const doesUrlExist = (req, res, next) => {
   next();
 };
 
+app.use(helmet()); // do i need to add app.disable('x-powered-by') also?
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 

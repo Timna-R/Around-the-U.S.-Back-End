@@ -1,12 +1,13 @@
 const Card = require('../models/card');
 
 const ERROR_CODE400 = 400;
+const ERROR_CODE500 = 500;
 
 // returns all cards
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(500).send({ message: 'Error', err }));
+    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message, err }));
 };
 
 // creates a new card
@@ -18,13 +19,14 @@ module.exports.createCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
+      // Validation Error handling
       if (err.name === 'ValidationError') {
         res
           .status(ERROR_CODE400)
           .send({ message: 'Error: invalid data passed to create card ' });
         return;
       }
-      res.status(500).send({ message: 'Error', err });
+      res.status(ERROR_CODE500).send({ message: err.message, err });
     });
 };
 
@@ -35,10 +37,18 @@ module.exports.deleteCardById = (req, res) => {
     .orFail(() => {
       const error = new Error('Error No card found with that id');
       error.statusCode = 404;
+      error.name = 'DocumentNotFoundError';
       throw error;
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(err.statusCode).send(err.message));
+    .catch((err) => {
+      // Validation Error handling
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(err.statusCode).send(err.message);
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };
 
 // like a card by id
@@ -49,16 +59,22 @@ module.exports.likeCard = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .orFail(() => {
       const error = new Error('Error No card found with that id');
       error.statusCode = 404;
+      error.name = 'DocumentNotFoundError';
       throw error;
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(err.statusCode).send(err.message));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(err.statusCode).send(err.message);
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };
 
 // unlike a card
@@ -69,14 +85,20 @@ module.exports.dislikeCard = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .orFail(() => {
       const error = new Error('Error No card found with that id');
       error.statusCode = 404;
+      error.name = 'DocumentNotFoundError';
       throw error;
     })
     .then((card) => res.send({ data: card }))
-    .catch((err) => res.status(err.statusCode).send(err.message));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(err.statusCode).send(err.message);
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };

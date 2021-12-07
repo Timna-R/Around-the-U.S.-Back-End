@@ -1,12 +1,13 @@
 const User = require('../models/user');
 
 const ERROR_CODE400 = 400;
+const ERROR_CODE500 = 500;
 
 // returns all users
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: 'Error', err }));
+    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message, err }));
 };
 
 // returns a user by _id
@@ -14,12 +15,19 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.id)
     // Error handling by custom function
     .orFail(() => {
-      const error = new Error('Error No user found with that id');
+      const error = new Error('Error: No user found with that id');
       error.statusCode = 404;
+      error.name = 'DocumentNotFoundError';
       throw error;
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => res.status(err.statusCode).send(err.message));
+    .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        res.status(err.statusCode).send(err.message);
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };
 
 // creates a new user
@@ -35,7 +43,7 @@ module.exports.createUser = (req, res) => {
           .send({ message: 'Error: invalid data passed to create user ' });
         return;
       }
-      res.status(500).send({ message: 'Error', err });
+      res.status(ERROR_CODE500).send({ message: err.message, err });
     });
 };
 
@@ -48,13 +56,18 @@ module.exports.updateUserProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res
-      .status(err.statusCode)
-      .send({ message: 'Data validation failed or another error occured' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res
+          .status(ERROR_CODE400)
+          .send({ message: 'Error: Data validation failed' });
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };
 
 // update avatar
@@ -66,11 +79,16 @@ module.exports.updateUserAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch((err) => res
-      .status(err.statusCode)
-      .send({ message: 'Data validation failed or another error occured' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res
+          .status(ERROR_CODE400)
+          .send({ message: 'Error: Data validation failed' });
+        return;
+      }
+      res.status(ERROR_CODE500).send({ message: err.message, err });
+    });
 };
