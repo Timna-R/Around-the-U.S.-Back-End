@@ -15,7 +15,7 @@ const doesUrlExist = (req, res, next) => {
   next();
 };
 
-app.use(helmet()); // do i need to add app.disable('x-powered-by') also?
+app.use(helmet());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 

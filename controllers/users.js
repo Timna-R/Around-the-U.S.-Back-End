@@ -7,7 +7,7 @@ const ERROR_CODE500 = 500;
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message, err }));
+    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message }));
 };
 
 // returns a user by _id
@@ -25,8 +25,11 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
+      } if (err.name === 'CastError') {
+        res.status(ERROR_CODE400).send('Error: Not valid id');
+        return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -40,10 +43,10 @@ module.exports.createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         res
           .status(ERROR_CODE400)
-          .send({ message: 'Error: invalid data passed to create user ' });
+          .send('Error: invalid data passed to create user ');
         return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -61,12 +64,10 @@ module.exports.updateUserProfile = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE400)
-          .send({ message: 'Error: Data validation failed' });
+        res.status(ERROR_CODE400).send('Error: Data validation failed');
         return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -84,11 +85,9 @@ module.exports.updateUserAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res
-          .status(ERROR_CODE400)
-          .send({ message: 'Error: Data validation failed' });
+        res.status(ERROR_CODE400).send('Error: Data validation failed');
         return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };

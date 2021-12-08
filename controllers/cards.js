@@ -7,7 +7,7 @@ const ERROR_CODE500 = 500;
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message, err }));
+    .catch((err) => res.status(ERROR_CODE500).send({ message: err.message }));
 };
 
 // creates a new card
@@ -23,10 +23,10 @@ module.exports.createCard = (req, res) => {
       if (err.name === 'ValidationError') {
         res
           .status(ERROR_CODE400)
-          .send({ message: 'Error: invalid data passed to create card ' });
+          .send('Error: invalid data passed to create card ');
         return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -35,7 +35,7 @@ module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     // Error handling by custom function
     .orFail(() => {
-      const error = new Error('Error No card found with that id');
+      const error = new Error('Error: No card found with that id');
       error.statusCode = 404;
       error.name = 'DocumentNotFoundError';
       throw error;
@@ -46,8 +46,11 @@ module.exports.deleteCardById = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
+      } if (err.name === 'CastError') {
+        res.status(ERROR_CODE400).send('Error: Not valid id');
+        return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -62,7 +65,7 @@ module.exports.likeCard = (req, res) => {
     },
   )
     .orFail(() => {
-      const error = new Error('Error No card found with that id');
+      const error = new Error('Error: No card found with that id');
       error.statusCode = 404;
       error.name = 'DocumentNotFoundError';
       throw error;
@@ -72,8 +75,11 @@ module.exports.likeCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
+      } if (err.name === 'CastError') {
+        res.status(ERROR_CODE400).send('Error: Not valid id');
+        return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
 
@@ -88,7 +94,7 @@ module.exports.dislikeCard = (req, res) => {
     },
   )
     .orFail(() => {
-      const error = new Error('Error No card found with that id');
+      const error = new Error('Error: No card found with that id');
       error.statusCode = 404;
       error.name = 'DocumentNotFoundError';
       throw error;
@@ -98,7 +104,10 @@ module.exports.dislikeCard = (req, res) => {
       if (err.name === 'DocumentNotFoundError') {
         res.status(err.statusCode).send(err.message);
         return;
+      } if (err.name === 'CastError') {
+        res.status(ERROR_CODE400).send('Error: Not valid id');
+        return;
       }
-      res.status(ERROR_CODE500).send({ message: err.message, err });
+      res.status(ERROR_CODE500).send({ message: err.message });
     });
 };
